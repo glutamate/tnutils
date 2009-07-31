@@ -4,7 +4,8 @@ import qualified Data.ByteString.Lazy as L
 import qualified Data.Binary as B
 import System.Time
 import Control.Concurrent
-
+import Debug.Trace
+import Data.List
 
 cond :: [(Bool, a)] -> a
 cond ((True, x):_) = x
@@ -56,6 +57,11 @@ onFst f (x,y) = (f x, y)
 onSnd :: (a->b) -> (c,a)->(c,b)
 onSnd f (x,y) = (x, f y)
 
+fst3 (x,_,_) = x
+snd3 (_,x,_) = x
+trd3 (_,_,x) = x
+
+
 maybeM :: Monad m => Maybe a -> (a -> m b) -> m ()
 maybeM Nothing _ = return ()
 maybeM (Just x) a = a x >> return ()
@@ -80,3 +86,18 @@ waitUntil t0 s = do tn <- getClockTime
  
 secsSince t0 =  do tn <- getClockTime
                    return $  diffInS tn t0
+
+print2 x y = putStrLn $ x++show y
+
+traceM s = trace s $ return ()
+traceM2 s s1 = trace (s++show s1) $ return ()
+
+trace2 s s1 = trace (s++show s1)
+
+splitBy :: Eq a => a -> [a] -> [[a]]
+splitBy p [] = []
+splitBy p s@(c:cs) | c == p = splitBy p cs
+                   | otherwise = let (hd, tl) = break (==p) s 
+                                 in hd : splitBy p tl
+
+testSplit = splitBy ' ' "foo bar"
