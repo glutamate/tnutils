@@ -43,7 +43,7 @@ safeHead [] = Nothing
 safeHead (x:_) = Just x
 
 safeLast [] = Nothing
-safeLast xs = last xs
+safeLast xs = Just $ last xs
 
 maxIdx :: Ord a => [a] -> Int
 maxIdx (x:xs) = mxIxAcc 1 0 x xs
