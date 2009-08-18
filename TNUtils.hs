@@ -7,9 +7,10 @@ import Control.Concurrent
 import Debug.Trace
 import Data.List
 
-cond :: [(Bool, a)] -> a
-cond ((True, x):_) = x
-cond ((False, _):conds) = cond conds
+cond :: [(Bool, a)] -> a -> a
+cond [] x = x
+cond ((True, x):_) _ = x
+cond ((False, _):conds) x = cond conds x
 
 nonempty = not . null
 
