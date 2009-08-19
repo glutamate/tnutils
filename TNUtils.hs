@@ -23,6 +23,10 @@ oneTrailingSlash s = case last s of
                       '/' -> s
                       _ -> s++"/"
 
+inChunksOf :: Int -> [a] -> [[a]]
+inChunksOf _ [] = []
+inChunksOf n xs = let (hds, tls) = splitAt n xs 
+                  in hds : inChunksOf n tls
 
 orJust (Just x) _ = x
 orJust _ y = y 
