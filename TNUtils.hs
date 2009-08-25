@@ -41,6 +41,10 @@ appendBinary fp w = L.appendFile fp {-. compress-} . B.encode $ w --writeFile fp
 loadBinary :: B.Binary w =>FilePath-> IO w
 loadBinary fp = return . B.decode {-. decompress -}=<< L.readFile fp --readFile fp >>= return . read
 
+lookupMany :: Eq a => a -> [(a,b)] -> [b]
+lookupMany x = map snd . filter ((==x) . fst)
+
+
 
 for = flip map
 
