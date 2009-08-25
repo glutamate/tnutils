@@ -44,6 +44,12 @@ loadBinary fp = return . B.decode {-. decompress -}=<< L.readFile fp --readFile 
 lookupMany :: Eq a => a -> [(a,b)] -> [b]
 lookupMany x = map snd . filter ((==x) . fst)
 
+--http://www.serpentine.com/blog/2009/01/11/fun-with-haskell-view-patterns/
+dropPrefix :: Eq a => [a] -> [a] -> ([a],[a])
+dropPrefix left@(x:xs) right@(y:ys)
+    | x == y    = dropPrefix xs ys
+dropPrefix left right = (left,right)
+
 
 
 for = flip map
