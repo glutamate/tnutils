@@ -83,6 +83,25 @@ trd3 (_,_,x) = x
 whenM mb ma = do b <- mb
                  when b ma
 
+
+untilM :: Monad m => m Bool -> m () -> m ()
+untilM mp ma = do p <- mp
+                  if p 
+                     then return ()
+                     else ma >> untilM mp ma
+                     
+
+ifM :: Monad m => m Bool -> m a ->  m a -> m a
+ifM mp mc ma = do p <- mp
+                  if p
+                     then mc
+                     else ma
+
+
+guardM :: MonadPlus m => m Bool -> m ()
+guardM mb = mb >>= guard
+
+
 maybeM :: Monad m => Maybe a -> (a -> m b) -> m ()
 maybeM Nothing _ = return ()
 maybeM (Just x) a = a x >> return ()
