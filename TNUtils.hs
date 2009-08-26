@@ -6,6 +6,7 @@ import System.Time
 import Control.Concurrent
 import Debug.Trace
 import Data.List
+import Control.Monad
 
 cond :: [(Bool, a)] -> a -> a
 cond [] x = x
@@ -79,6 +80,8 @@ fst3 (x,_,_) = x
 snd3 (_,x,_) = x
 trd3 (_,_,x) = x
 
+whenM mb ma = do b <- mb
+                 when b ma
 
 maybeM :: Monad m => Maybe a -> (a -> m b) -> m ()
 maybeM Nothing _ = return ()
