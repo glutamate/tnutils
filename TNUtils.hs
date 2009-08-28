@@ -18,6 +18,8 @@ nonempty = not . null
 idInt :: Int -> Int
 idInt = id
 
+spliceFirst spl (s:ss) = (spl++s):ss
+
 oneTrailingSlash "/" = "/"
 oneTrailingSlash "" = ""
 oneTrailingSlash s = case last s of
