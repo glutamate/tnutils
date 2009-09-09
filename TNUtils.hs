@@ -26,6 +26,11 @@ oneTrailingSlash s = case last s of
                       '/' -> s
                       _ -> s++"/"
 
+noInitSlash ('/':s) = s
+noInitSlash s = s
+
+x ./ y = oneTrailingSlash x ++ noInitSlash y
+
 inChunksOf :: Int -> [a] -> [[a]]
 inChunksOf _ [] = []
 inChunksOf n xs = let (hds, tls) = splitAt n xs 
@@ -62,6 +67,13 @@ safeHead (x:_) = Just x
 
 safeLast [] = Nothing
 safeLast xs = Just $ last xs
+
+safeRead :: Read a => String -> Maybe a
+safeRead x = case readsPrec 5 x of 
+               [] -> Nothing
+               (x,_):_ -> Just x
+               
+
 
 maxIdx :: Ord a => [a] -> Int
 maxIdx (x:xs) = mxIxAcc 1 0 x xs
