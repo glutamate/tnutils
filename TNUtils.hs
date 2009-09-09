@@ -7,6 +7,7 @@ import Control.Concurrent
 import Debug.Trace
 import Data.List
 import Control.Monad
+import Data.Char
 
 cond :: [(Bool, a)] -> a -> a
 cond [] x = x
@@ -57,6 +58,12 @@ dropPrefix :: Eq a => [a] -> [a] -> ([a],[a])
 dropPrefix left@(x:xs) right@(y:ys)
     | x == y    = dropPrefix xs ys
 dropPrefix left right = (left,right)
+
+unCap [] = []
+unCap (c:cs) = toLower c : cs
+
+beginsWithHyphen ('-':_) = True
+beginsWithHyphen _ = False
 
 
 
