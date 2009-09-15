@@ -8,6 +8,8 @@ import Debug.Trace
 import Data.List
 import Control.Monad
 import Data.Char
+import System.Directory
+import Data.Maybe
 
 cond :: [(Bool, a)] -> a -> a
 cond [] x = x
@@ -31,6 +33,13 @@ noInitSlash ('/':s) = s
 noInitSlash s = s
 
 x ./ y = oneTrailingSlash x ++ noInitSlash y
+
+
+uniqueFileInDir :: String -> String -> IO String
+uniqueFileInDir base dir = do
+  conts <- getDirectoryContents dir
+  let fileNoMax = foldl (max) 0 $ catMaybes $ map (safeRead . (drop $ length base)) $ filter (base `isPrefixOf`) conts
+  return $ dir ./ (base++show fileNoMax)
 
 inChunksOf :: Int -> [a] -> [[a]]
 inChunksOf _ [] = []
