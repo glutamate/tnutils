@@ -113,6 +113,9 @@ trd3 (_,_,x) = x
 whenM mb ma = do b <- mb
                  when b ma
 
+unlessM mb ma = do b <- mb
+                   when (not b) ma
+
 
 untilM :: Monad m => m Bool -> m () -> m ()
 untilM mp ma = do p <- mp
