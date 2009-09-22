@@ -11,6 +11,18 @@ import Data.Char
 import System.Directory
 import Data.Maybe
 
+optVal :: Read a => Char -> a -> [String] -> a 
+optVal key def opts = case find (['-', key] `isPrefixOf`) opts of
+                        Nothing -> def
+                        Just ('-':_:s) -> safeRead s `orJust` def
+
+optStr :: Char -> String -> [String] -> String
+optStr key def opts = case find (['-', key] `isPrefixOf`) opts of
+                        Nothing -> def
+                        Just ('-':_:s) -> s
+
+
+
 cond :: [(Bool, a)] -> a -> a
 cond [] x = x
 cond ((True, x):_) _ = x
