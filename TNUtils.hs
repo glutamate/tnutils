@@ -1,6 +1,7 @@
 module TNUtils where
 
 import qualified Data.ByteString.Lazy as L
+import qualified Data.ByteString as BS
 import qualified Data.Binary as B
 import System.Time
 import Control.Concurrent
@@ -60,6 +61,10 @@ inChunksOf n xs = let (hds, tls) = splitAt n xs
 
 orJust (Just x) _ = x
 orJust _ y = y 
+
+loadBinaryStrict :: B.Binary w =>FilePath-> IO w
+loadBinaryStrict fp = do c <- BS.readFile fp 
+                         return $ B.decode $ L.fromChunks [c] 
 
 
 saveBinary :: B.Binary w => FilePath-> w -> IO ()
