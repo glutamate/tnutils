@@ -191,3 +191,17 @@ splitBy p s@(c:cs) | c == p = splitBy p cs
                                  in hd : splitBy p tl
 
 testSplit = splitBy ' ' "foo bar"
+
+
+eqSub [] _  =True
+eqSub _ [] = False
+eqSub (x:xs) (y:ys) | x == y = eqSub xs ys
+                    | otherwise = False
+
+subtitute :: Eq a => [a] -> [a] -> [a] -> [a]
+subtitute old new = 
+    let n = length old
+        f [] = []
+        f s@(c:cs) | eqSub old s = new++f (drop n s)
+                   | otherwise = c : f cs
+    in f
