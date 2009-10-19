@@ -198,10 +198,12 @@ eqSub _ [] = False
 eqSub (x:xs) (y:ys) | x == y = eqSub xs ys
                     | otherwise = False
 
-subtitute :: Eq a => [a] -> [a] -> [a] -> [a]
-subtitute old new = 
+substitute :: Eq a => [a] -> [a] -> [a] -> [a]
+substitute old new = 
     let n = length old
         f [] = []
         f s@(c:cs) | eqSub old s = new++f (drop n s)
                    | otherwise = c : f cs
     in f
+
+roundToFrac dt t = (realToFrac $ round $ t/dt)*dt
