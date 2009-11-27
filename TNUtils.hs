@@ -11,6 +11,11 @@ import Control.Monad
 import Data.Char
 import System.Directory
 import Data.Maybe
+import Control.Monad.State
+import Control.Monad.Trans
+import Control.Monad.Writer hiding (tell)
+import qualified Control.Monad.Writer as W
+
 
 optVal :: Read a => Char -> a -> [String] -> a 
 optVal key def opts = case find (['-', key] `isPrefixOf`) opts of
@@ -207,3 +212,18 @@ substitute old new =
     in f
 
 roundToFrac dt t = (realToFrac $ round $ t/dt)*dt
+
+
+type CodeWriterT m a= StateT (Int, [String]) (WriterT [String] m) a
+
+indent n = do 
+  modify $ \(ind,ss)->(ind+n,ss)
+
+tell :: Monad m => String -> CodeWriterT m ()
+tell s = do n <- fst `fmap` get
+            lift $ W.tell [(replicate n ' ')++s]
+execCodeWriterT :: Monad m => String -> CodeWriterT m () -> m String
+execCodeWriterT modNm cw = do
+  ss <- execWriterT $ execStateT cw (0,[])
+  let (imps, rest) = partition ("import " `isPrefixOf`) ss
+  return $ unlines (("module "++modNm++" where"):imps++rest)
