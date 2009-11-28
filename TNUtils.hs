@@ -222,8 +222,13 @@ indent n = do
 tell :: Monad m => String -> CodeWriterT m ()
 tell s = do n <- fst `fmap` get
             lift $ W.tell [(replicate n ' ')++s]
+
 execCodeWriterT :: Monad m => String -> CodeWriterT m () -> m String
 execCodeWriterT modNm cw = do
   ss <- execWriterT $ execStateT cw (0,[])
   let (imps, rest) = partition ("import " `isPrefixOf`) ss
   return $ unlines (("module "++modNm++" where"):imps++rest)
+
+execCodeWriterNotHsT :: (Functor m, Monad m) => CodeWriterT m () -> m String
+execCodeWriterNotHsT cw = do
+  unlines `fmap` (execWriterT $ execStateT cw (0,[]))
