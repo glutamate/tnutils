@@ -1,0 +1,3 @@
+module Test where
+
+myfun :: a -> b -> c

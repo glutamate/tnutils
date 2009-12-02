@@ -1,0 +1,136 @@
+Prog. Program ::= "module" BIdent "where" "{" [Declare] "}";
+
+DLet. Declare ::= Pat [Arg] "=" Exp ;
+DImport. Declare ::= "use" BIdent ;
+DImportSubst. Declare ::= "use" BIdent "{" [ImpSubstLine] "}";
+DType. Declare ::= BIdent "::" Type ;
+
+DSinkConn.Declare ::= Exp "*>" BIdent Exp ;
+DReadSrc.Declare ::= BIdent "<*" BIdent Exp ;
+
+DStage.Declare ::= "stage" BIdent Integer;
+DStageNeg.Declare ::= "stage" BIdent "-" Integer;
+
+Add. Exp2 ::= Exp2 "+" Exp3 ;
+Sub. Exp2 ::= Exp2 "-" Exp3 ;
+Mul. Exp3 ::= Exp3 "*" Exp4 ;
+Div. Exp3 ::= Exp3 "/" Exp4 ;
+Negate. Exp1 ::= "-" Exp2;
+Natexp. Exp5 ::= "exp" Exp ;
+Natlog. Exp5 ::= "ln" Exp ;
+Realpart. Exp5 ::= "re" Exp ;
+Imagpart. Exp5 ::= "im" Exp ;
+
+EConst. Exp6 ::= Const ;
+And. Exp1 ::= Exp1 "&&" Exp2 ;
+Or. Exp1 ::= Exp1 "||" Exp2 ;
+Not. Exp2 ::= "!" Exp3 ;
+
+ECmp.Exp1 ::= Exp1 CmpOp Exp2 ;
+
+If. Exp ::= "if" Exp "then" Exp "else" Exp ;
+
+Lam. Exp2 ::= "\\" Pat "->" Exp ;
+App. Exp4 ::= Exp4 Exp5 ;
+Var. Exp6 ::= BIdent ;
+
+
+Pair. Exp4 ::= "(" Exp "," Exp ")" ;
+Pair3. Exp4 ::= "(" Exp "," Exp "," Exp ")" ;
+Nil. Exp6 ::= "[]" ;
+Cons. Exp ::= Exp ":" Exp ;
+ListLit.Exp4 ::= "[" [Exp] "]" ;
+
+
+
+Sig. Exp1 ::= "{:" Exp ":}" ;
+SigLimited. Exp1 ::= "{:" Exp "#" Exp ":}" ;
+SigVal. Exp6 ::= "<:" Exp ":>" ;
+SigAt. Exp2 ::= Exp2 "@" Exp3 ;
+SigDelay. Exp4 ::= "delay" Exp4 Exp5  ;
+SigDeriv. Exp2 ::= "D" Exp3;
+SigFby. Exp2 ::= Exp2 "fby" Exp3;
+
+
+Event. Exp4 ::= "[:" Exp ":]" ;
+ETest. Exp2 ::= Exp2 "?" Exp3 ; 
+EScan. Exp4 ::= "escan" Exp4 Exp5  ;
+Forget. Exp4 ::= "forget" Exp4 Exp5  ;
+Switch. Exp ::= "switch" "{" Exp ";" [SwitchLine] "}";
+Box. Exp5 ::= "box" Exp4;
+Translate. Exp4 ::= "translate" Exp4 Exp5;
+Colour. Exp4 ::= "colour" Exp4 Exp5;
+
+ELet.Exp ::= "let" "{" [LetLine] "}" "in" Exp ;
+ECase.Exp ::= "case" Exp "of" "{" [CaseLine] "}"  ;
+
+SwitchLine. SwitchLine ::= Exp "~>" Exp ;
+LetLine. LetLine ::= Pat "=" Exp ;
+CaseLine. CaseLine ::= Pat "->" Exp ;
+Arg. Arg ::= Pat1 ;
+
+ImpSubstLine. ImpSubstLine ::= BIdent "=>" Exp ; 
+
+PVar. Pat1 ::= BIdent ;
+PWild. Pat1 ::= "_" ;
+PLit. Pat1 ::= Const ;
+PPair. Pat1 ::= "(" Pat "," Pat ")" ;
+PNil. Pat1 ::= "[]" ;
+PCons. Pat ::= Pat ":" Pat ;
+PDeriv. Pat ::= "D" Pat;
+
+CInt. Const ::= Integer ;
+CDbl. Const ::= Double ;
+CUnit. Const ::= "()" ;
+CTrue. Const ::= "true" ;
+CFalse. Const ::= "false" ;
+CString. Const ::= String ; 
+
+TUnit. Type2 ::= "()" ;
+TLam. Type1 ::= Type2 "->" Type1 ;
+TPair2. Type2 ::= "(" Type "," Type ")" ;
+TPair3. Type2 ::= "(" Type "," Type "," Type ")" ;
+TNum. Type2 ::= "Number";
+TReal. Type2 ::= "Real";
+TInt. Type2 ::= "Int";
+TBool. Type2 ::= "Bool";
+TShape. Type2 ::= "Shape" ;
+TSignal. Type2 ::= "Signal" Type;
+TEvent. Type1 ::= "Event" Type2;
+TDuration. Type1 ::= "Duration" Type2;
+TList. Type2 ::= "[" Type "]";
+TyVar. Type2 ::= BIdent;
+
+Lt. CmpOp ::= "<" ;
+Gt. CmpOp ::= ">" ;
+Le. CmpOp ::= "<=" ;
+Ge. CmpOp ::= ">=" ;
+Eq. CmpOp ::= "==" ;
+Ne. CmpOp ::= "!=" ;
+
+coercions Exp 6;
+
+coercions Pat 1;
+--coercions Const 0 ;
+coercions Type 2;
+separator Declare ";"  ;
+separator SwitchLine ";"  ;
+separator LetLine ";"  ;
+separator CaseLine ";"  ;
+
+separator Exp ","  ;
+
+separator BIdent " " ;
+
+separator Arg "" ;
+separator ImpSubstLine "," ;
+comment "--" ;
+
+comment "{-" "-}" ;
+
+layout "where", "of", "let", "switch";
+layout stop "in";
+
+--layout toplevel ;
+
+token BIdent ((letter|'_') (letter|digit|'_'|'\'')*) ;

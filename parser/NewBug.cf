@@ -1,0 +1,86 @@
+Prog. Program ::= "module" BIdent "where" "{" [Declare] "}";
+
+DLet. Declare ::= Pat [Pat] "=" Exp ;
+DImport. Declare ::= "use" BIdent ;
+DType. Declare ::= BIdent "::" Type ;
+DInfixl. Declare ::= "infixl" Integer Infix ;
+DInfixr. Declare ::= "infixr" Integer Infix ;
+separator  Declare ";" ;
+
+Var. Exp4 ::= BIdent ;
+EWild. Exp4 ::= "_" ;
+EConst. Exp4 ::= Const ;
+EApp.    Exp1 ::= Exp1 Exp2 ;
+EInfix.  Exp  ::= Exp1 Infix Exp1 ;
+If. Exp ::= "if" Exp "then" Exp "else" Exp ;
+Lam. Exp ::= "\\" Pat "->" Exp ;
+
+Pair. Exp4 ::= "(" Exp "," Exp ")" ;
+Pair3. Exp4 ::= "(" Exp "," Exp "," Exp ")" ;
+Nil. Exp4 ::= "[]" ;
+ListLit.Exp4 ::= "[" [Exp] "]" ;
+--cons with infix
+
+Sig. Exp4 ::= "{:" Exp ":}" ;
+SigLimited. Exp4 ::= "{:" Exp "#" Exp ":}" ;
+SigVal. Exp4 ::= "<:" Exp ":>" ;
+SigFby. Exp ::= Exp1 "fby" Exp1; 
+
+Event. Exp4 ::= "[:" Exp ":]" ;
+Switch. Exp ::= "switch" "{" Exp ";" [SwitchLine] "}";
+
+ELet.Exp ::= "let" "{" [LetLine] "}" "in" Exp ;
+ECase.Exp ::= "case" Exp "of" "{" [CaseLine] "}"  ;
+
+coercions Exp 4 ;
+separator Exp ","  ;
+
+LetLine. LetLine ::= Pat "=" Exp ;
+CaseLine. CaseLine ::= Pat "->" Exp ;
+separator LetLine ";"  ;
+separator CaseLine ";"  ;
+
+
+SwitchLine. SwitchLine ::= Exp "~>" Exp ;
+separator SwitchLine ";"  ;
+
+PVar. Pat1 ::= BIdent ;
+PWild. Pat1 ::= "_" ;
+PLit. Pat1 ::= Const ;
+PPair. Pat1 ::= "(" Pat "," Pat ")" ;
+PNil. Pat1 ::= "[]" ;
+PCons. Pat ::= Pat1 ":" Pat1 ;
+PDeriv. Pat ::= "D" Pat1;
+
+coercions Pat 1 ;
+separator Pat "" ;
+
+TUnit. Type2 ::= "()" ;
+TyIdent. Type2 ::= BIdent;
+TLam. Type1 ::= Type2 "->" Type1 ;
+TPair2. Type2 ::= "(" Type "," Type ")" ;
+TPair3. Type2 ::= "(" Type "," Type "," Type ")" ;
+TSignal. Type ::= "Signal" Type1;
+TEvent. Type ::= "Event" Type1;
+TDuration. Type ::= "Duration" Type1;
+TList. Type2 ::= "[" Type "]";
+
+coercions Type 2 ;
+
+CInt. Const ::= Integer ;
+CDbl. Const ::= Double ;
+CUnit. Const ::= "()" ;
+CTrue. Const ::= "true" ;
+CFalse. Const ::= "false" ;
+CString. Const ::= String ; 
+
+
+comment "--" ;
+
+comment "{-" "-}" ;
+
+layout "where", "of", "let", "switch";
+layout stop "in";
+
+token BIdent ((letter|'_') (letter|digit|'_'|'\'')*) ;
+token Infix ([".:-^*+=<>&%$!#%|/\\"]+) ;
