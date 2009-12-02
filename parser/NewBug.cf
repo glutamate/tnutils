@@ -1,17 +1,23 @@
 Prog. Program ::= "module" BIdent "where" "{" [Declare] "}";
 
 DLet. Declare ::= Pat [Pat] "=" Exp ;
+DLetStore. Declare ::= BIdent "!" "=" Exp ;
 DImport. Declare ::= "use" BIdent ;
 DType. Declare ::= BIdent "::" Type ;
 DInfixl. Declare ::= "infixl" Integer Infix ;
 DInfixr. Declare ::= "infixr" Integer Infix ;
+DSinkConn.Declare ::=  BIdent "*>" BIdent Exp;
+DReadSrc.Declare ::= BIdent "<*" BIdent Exp ;
+DStage.Declare ::= "stage" BIdent Integer;
+DStageNeg.Declare ::= "stage" BIdent "-" Integer;
+
 separator  Declare ";" ;
 
 Var. Exp4 ::= BIdent ;
 EWild. Exp4 ::= "_" ;
 EConst. Exp4 ::= Const ;
-EApp.    Exp1 ::= Exp1 Exp2 ;
-EInfix.  Exp  ::= Exp1 Infix Exp1 ;
+EApp. Exp2 ::= Exp2 Exp3 ;
+EInfix.  Exp1  ::= Exp1 Infix Exp2 ;
 If. Exp ::= "if" Exp "then" Exp "else" Exp ;
 Lam. Exp ::= "\\" Pat "->" Exp ;
 
@@ -27,7 +33,7 @@ SigVal. Exp4 ::= "<:" Exp ":>" ;
 SigFby. Exp ::= Exp1 "fby" Exp1; 
 
 Event. Exp4 ::= "[:" Exp ":]" ;
-Switch. Exp ::= "switch" "{" Exp ";" [SwitchLine] "}";
+Switch. Exp ::= "switch" "{" [SwitchLine] "}";
 
 ELet.Exp ::= "let" "{" [LetLine] "}" "in" Exp ;
 ECase.Exp ::= "case" Exp "of" "{" [CaseLine] "}"  ;
@@ -41,7 +47,7 @@ separator LetLine ";"  ;
 separator CaseLine ";"  ;
 
 
-SwitchLine. SwitchLine ::= Exp "~>" Exp ;
+SwitchLine. SwitchLine ::= [Exp] "~>" Exp ;
 separator SwitchLine ";"  ;
 
 PVar. Pat1 ::= BIdent ;
@@ -57,12 +63,12 @@ separator Pat "" ;
 
 TUnit. Type2 ::= "()" ;
 TyIdent. Type2 ::= BIdent;
-TLam. Type1 ::= Type2 "->" Type1 ;
+TLam. Type ::= Type1 "->" Type ;
 TPair2. Type2 ::= "(" Type "," Type ")" ;
 TPair3. Type2 ::= "(" Type "," Type "," Type ")" ;
-TSignal. Type ::= "Signal" Type1;
-TEvent. Type ::= "Event" Type1;
-TDuration. Type ::= "Duration" Type1;
+TSignal. Type1 ::= "Signal" Type2;
+TEvent. Type1 ::= "Event" Type2;
+TDuration. Type1 ::= "Duration" Type2;
 TList. Type2 ::= "[" Type "]";
 
 coercions Type 2 ;
