@@ -1,6 +1,6 @@
 module Test where
 
-myfun :: a -> b -> c
+{-myfun :: a -> b -> c
 myfun = x+f y
 
 bar = map foo myList
@@ -10,3 +10,16 @@ smap ::  (a->b) -> Signal a -> Signal b
 sig = switch
 	_, e ~> \_-> foo
 	f, g ~> \_-> foo
+-}
+
+x= -5
+
+y= 1-4
+
+z = -1*5
+
+--w =   {: (-v * <: sig :> +4 ) :}
+
+--u = {: (v*<: gcell :> + (tonicInhib*v) - ((v-vrest)/rin))/cm :} 
+
+cellOde = \v->{: (v * <: gcell :> + (tonicInhib*v) - ((v-vrest)/rin))/cm :} 

@@ -6,40 +6,50 @@ DImport. Declare ::= "use" BIdent ;
 DType. Declare ::= BIdent "::" Type ;
 DInfixl. Declare ::= "infixl" Integer Infix ;
 DInfixr. Declare ::= "infixr" Integer Infix ;
-DSinkConn.Declare ::=  BIdent "*>" BIdent Exp;
+DSinkConn.Declare ::= BIdent "*>" BIdent Exp;
 DReadSrc.Declare ::= BIdent "<*" BIdent Exp ;
 DStage.Declare ::= "stage" BIdent Integer;
 DStageNeg.Declare ::= "stage" BIdent "-" Integer;
 
 separator  Declare ";" ;
 
-Var. Exp4 ::= BIdent ;
-EWild. Exp4 ::= "_" ;
-EConst. Exp4 ::= Const ;
-EApp. Exp2 ::= Exp2 Exp3 ;
+Var. Exp6 ::= BIdent ;
+EWild. Exp6 ::= "_" ;
+EConst. Exp6 ::= Const ;
+EApp. Exp4 ::= Exp4 Exp5 ;
 EInfix.  Exp1  ::= Exp1 Infix Exp2 ;
+ESub. Exp1  ::= Exp1 "-" Exp2 ;
+--EMul. Exp2  ::= Exp2 "*" Exp3 ;
+Negate. Exp3 ::= "-" Exp4;
+
+
 If. Exp ::= "if" Exp "then" Exp "else" Exp ;
 Lam. Exp ::= "\\" Pat "->" Exp ;
-
-Pair. Exp4 ::= "(" Exp "," Exp ")" ;
-Pair3. Exp4 ::= "(" Exp "," Exp "," Exp ")" ;
-Nil. Exp4 ::= "[]" ;
-ListLit.Exp4 ::= "[" [Exp] "]" ;
+Pair. Exp6 ::= "(" Exp "," Exp ")" ;
+Pair3. Exp6 ::= "(" Exp "," Exp "," Exp ")" ;
+Nil. Exp6 ::= "[]" ;
+ListLit.Exp6 ::= "[" [Exp] "]" ;
 --cons with infix
 
-Sig. Exp4 ::= "{:" Exp ":}" ;
-SigLimited. Exp4 ::= "{:" Exp "#" Exp ":}" ;
-SigVal. Exp4 ::= "<:" Exp ":>" ;
+Sig. Exp6 ::= "{:" Exp ":}" ;
+SigLimited. Exp6 ::= "{:" Exp "#" Exp ":}" ;
+SigVal. Exp6 ::= "<:" Exp ":>" ;
 SigFby. Exp ::= Exp1 "fby" Exp1; 
 
-Event. Exp4 ::= "[:" Exp ":]" ;
+Event. Exp6 ::= "[:" Exp ":]" ;
 Switch. Exp ::= "switch" "{" [SwitchLine] "}";
+SwitchD1. Exp ::= "D" BIdent "=" Exp ;
+SwitchD2. Exp ::= "D" "(" "D" BIdent ")" "=" Exp ;
 
 ELet.Exp ::= "let" "{" [LetLine] "}" "in" Exp ;
 ECase.Exp ::= "case" Exp "of" "{" [CaseLine] "}"  ;
 
-coercions Exp 4 ;
+coercions Exp 6 ;
 separator Exp ","  ;
+
+--D. ManyDs ::= "D" ; 
+
+--separator ManyDs "," ; 
 
 LetLine. LetLine ::= Pat "=" Exp ;
 CaseLine. CaseLine ::= Pat "->" Exp ;
@@ -89,4 +99,4 @@ layout "where", "of", "let", "switch";
 layout stop "in";
 
 token BIdent ((letter|'_') (letter|digit|'_'|'\'')*) ;
-token Infix ([".:-^*+=<>&%$!#%|/\\"]+) ;
+token Infix (([".:^*+=<>&%$!#%|/\\"]) ([".:-^*+=<>&%$!#%|/\\"]*)) ; --may not start with -

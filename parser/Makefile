@@ -1,4 +1,5 @@
 all:
+	bnfc NewBug.cf
 	happy -gca ParNewBug.y
 	alex -g LexNewBug.x
 	ghc --make TestNewBug.hs -o TestNewBug
