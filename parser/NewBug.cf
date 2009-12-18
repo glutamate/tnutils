@@ -1,13 +1,13 @@
 Prog. Program ::= "module" BIdent "where" "{" [Declare] "}";
 
 DLet. Declare ::= Pat [Pat] "=" Exp ;
-DLetStore. Declare ::= BIdent "!" "=" Exp ;
 DImport. Declare ::= "use" BIdent ;
 DType. Declare ::= BIdent "::" Type ;
 DInfixl. Declare ::= "infixl" Integer Infix ;
 DInfixr. Declare ::= "infixr" Integer Infix ;
+--DSinkConn.Declare ::= Exp6 "*>" BIdent Exp;
 DSinkConn.Declare ::= BIdent "*>" BIdent Exp;
-DReadSrc.Declare ::= BIdent "<*" BIdent Exp ;
+DReadSrc.Declare ::= Pat "<*" BIdent Exp ;
 DStage.Declare ::= "stage" BIdent Integer;
 DStageNeg.Declare ::= "stage" BIdent "-" Integer;
 
@@ -38,8 +38,8 @@ SigFby. Exp ::= Exp1 "fby" Exp1;
 
 Event. Exp6 ::= "[:" Exp ":]" ;
 Switch. Exp ::= "switch" "{" [SwitchLine] "}";
-SwitchD1. Exp ::= "D" BIdent "=" Exp ;
-SwitchD2. Exp ::= "D" "(" "D" BIdent ")" "=" Exp ;
+SwitchD1. Exp ::= ManyDs "=" Exp ;
+--SwitchD2. Exp ::= "D" "(" "D" BIdent ")" "=" Exp ;
 
 ELet.Exp ::= "let" "{" [LetLine] "}" "in" Exp ;
 ECase.Exp ::= "case" Exp "of" "{" [CaseLine] "}"  ;
@@ -47,9 +47,11 @@ ECase.Exp ::= "case" Exp "of" "{" [CaseLine] "}"  ;
 coercions Exp 6 ;
 separator Exp ","  ;
 
---D. ManyDs ::= "D" ; 
+D. ManyDs ::= "D" ManyDs1;
+DIdent.ManyDs1 ::= BIdent; 
 
---separator ManyDs "," ; 
+coercions ManyDs 1 ;
+--separator ManyDs "" ; 
 
 LetLine. LetLine ::= Pat "=" Exp ;
 CaseLine. CaseLine ::= Pat "->" Exp ;
@@ -67,6 +69,7 @@ PPair. Pat1 ::= "(" Pat "," Pat ")" ;
 PNil. Pat1 ::= "[]" ;
 PCons. Pat ::= Pat1 ":" Pat1 ;
 PDeriv. Pat ::= "D" Pat1;
+PStore. Pat ::= Pat1 "!" ;
 
 coercions Pat 1 ;
 separator Pat "" ;
@@ -74,7 +77,7 @@ separator Pat "" ;
 TUnit. Type2 ::= "()" ;
 TyIdent. Type2 ::= BIdent;
 TLam. Type ::= Type1 "->" Type ;
-TPair2. Type2 ::= "(" Type "," Type ")" ;
+TPair. Type2 ::= "(" Type "," Type ")" ;
 TPair3. Type2 ::= "(" Type "," Type "," Type ")" ;
 TSignal. Type1 ::= "Signal" Type2;
 TEvent. Type1 ::= "Event" Type2;
