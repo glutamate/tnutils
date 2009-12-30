@@ -219,6 +219,10 @@ type CodeWriterT m a= StateT (Int, [String]) (WriterT [String] m) a
 indent n = do 
   modify $ \(ind,ss)->(ind+n,ss)
 
+indentAbs n = do 
+  modify $ \(_,ss)->(n,ss)
+
+
 tell :: Monad m => String -> CodeWriterT m ()
 tell s = do n <- fst `fmap` get
             lift $ W.tell [(replicate n ' ')++s]
