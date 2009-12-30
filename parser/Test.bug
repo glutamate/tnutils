@@ -18,8 +18,10 @@ y= 1-4
 
 z = -1*5
 
---w =   {: (-v * <: sig :> +4 ) :}
+w =   {: (-v * <: sig :> +4 ) :}
 
---u = {: (v*<: gcell :> + (tonicInhib*v) - ((v-vrest)/rin))/cm :} 
+u! = {: (v * <: gcell :> + (tonicInhib*v) - ((v-vrest)/rin))/cm :} 
+
+xyz *> dac ()
 
 cellOde = \v->{: (v * <: gcell :> + (tonicInhib*v) - ((v-vrest)/rin))/cm :} 
