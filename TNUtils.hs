@@ -166,6 +166,10 @@ globalSecsNow = do tnow <- getClockTime
                    tstart <- readTV globalTimeStartTVar
                    return $ diffInS tnow tstart   -}    
 
+tic = getClockTime
+toc t1 = do t2 <- getClockTime
+            return $ diffInS t2 t1
+
 diffInS (TOD t1s t1ps) (TOD t2s t2ps) = (fromInteger $ (t1s-t2s)*1000*1000 + ((t1ps-t2ps) `div` (1000*1000))) / 1000000
 
 waitSecs :: Double -> IO ()
