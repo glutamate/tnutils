@@ -199,6 +199,16 @@ splitBy p s@(c:cs) | c == p = splitBy p cs
                    | otherwise = let (hd, tl) = break (==p) s 
                                  in hd : splitBy p tl
 
+splitByMany :: Eq a => [a] -> [a] -> [[a]]
+splitByMany _ [] = []
+splitByMany p cs | p `isPrefixOf` cs = splitByMany p (drop (length p) cs)
+                 | otherwise = case posOfInfix p cs of
+                                 Nothing -> [cs]
+                                 Just n -> take n cs : splitByMany p (drop n cs)
+    where posOfInfix p [] = Nothing
+          posOfInfix p s | p `isPrefixOf` s = Just 0
+                         | otherwise = (+1) `fmap` posOfInfix p (tail s)
+
 testSplit = splitBy ' ' "foo bar"
 
 
