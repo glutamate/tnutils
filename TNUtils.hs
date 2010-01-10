@@ -209,6 +209,10 @@ splitByMany p cs | p `isPrefixOf` cs = splitByMany p (drop (length p) cs)
           posOfInfix p s | p `isPrefixOf` s = Just 0
                          | otherwise = (+1) `fmap` posOfInfix p (tail s)
 
+beforeInfix p [] = []
+beforeInfix p s | p `isPrefixOf` s = []
+                | otherwise = (head s) : beforeInfix p (tail s)
+
 testSplit = splitBy ' ' "foo bar"
 
 
