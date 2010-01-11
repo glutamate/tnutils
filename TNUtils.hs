@@ -132,6 +132,12 @@ fst3 (x,_,_) = x
 snd3 (_,x,_) = x
 trd3 (_,_,x) = x
 
+fst4 (x,_,_,_) = x
+snd4 (_,x,_,_) = x
+trd4 (_,_,x,_) = x
+fth4 (_,_,_,x) = x
+
+
 whenM mb ma = do b <- mb
                  when b ma
 
