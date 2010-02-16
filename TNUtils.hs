@@ -260,3 +260,11 @@ execCodeWriterT modNm cw = do
 execCodeWriterNotHsT :: (Functor m, Monad m) => CodeWriterT m () -> m String
 execCodeWriterNotHsT cw = do
   unlines `fmap` (execWriterT $ execStateT cw (0,[]))
+
+
+thin :: Int -> [a] -> [a]
+thin n [] = []
+thin 0 xs  = xs
+thin n xs = let (x:_, ys) = splitAt (n+1) xs
+            in x : thin n ys
+            
