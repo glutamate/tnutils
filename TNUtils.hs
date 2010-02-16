@@ -15,6 +15,7 @@ import Control.Monad.State
 import Control.Monad.Trans
 import Control.Monad.Writer hiding (tell)
 import qualified Control.Monad.Writer as W
+import System.IO
 
 
 optVal :: Read a => Char -> a -> [String] -> a 
@@ -67,6 +68,12 @@ inChunksOf n xs = let (hds, tls) = splitAt n xs
 orJust (Just x) _ = x
 orJust _ y = y 
 
+strictWriteBS :: String -> BS.ByteString -> IO ()
+strictWriteBS fnm bs = do
+  h <- openBinaryFile fnm WriteMode
+  BS.hPut h bs
+  hClose h
+
 loadBinaryStrict :: B.Binary w =>FilePath-> IO w
 loadBinaryStrict fp = do c <- BS.readFile fp 
                          return $ B.decode $ L.fromChunks [c] 
@@ -74,6 +81,10 @@ loadBinaryStrict fp = do c <- BS.readFile fp
 
 saveBinary :: B.Binary w => FilePath-> w -> IO ()
 saveBinary fp w = L.writeFile fp {-. compress-} . B.encode $ w --writeFile fp . show
+
+saveBinaryStrict :: B.Binary w => FilePath-> w -> IO ()
+saveBinaryStrict fp w = strictWriteBS fp {-. compress-} . BS.concat . L.toChunks $ B.encode $ w --writeFile fp . show
+
 
 appendBinary :: B.Binary w => FilePath-> w -> IO ()
 appendBinary fp w = L.appendFile fp {-. compress-} . B.encode $ w --writeFile fp . show
