@@ -78,6 +78,9 @@ loadBinaryStrict :: B.Binary w =>FilePath-> IO w
 loadBinaryStrict fp = do c <- BS.readFile fp 
                          return $ B.decode $ L.fromChunks [c] 
 
+writeBinary :: B.Binary w => Handle-> w -> IO ()
+writeBinary h = L.hPut h . B.encode
+
 
 saveBinary :: B.Binary w => FilePath-> w -> IO ()
 saveBinary fp w = L.writeFile fp {-. compress-} . B.encode $ w --writeFile fp . show
