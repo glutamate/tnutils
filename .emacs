@@ -3,12 +3,16 @@
       (append (list nil "~/")
               load-path))
 
-(load "~/haskell-mode-2.4/haskell-site-file")
+;(load "~/haskell-mode-2.4/haskell-site-file")
 
 ;(require 'w3m-e21)
 ;(provide 'w3m-e23)
 (setq x-select-enable-clipboard t)
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+
+(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+        "Prevent annoying \"Active processes exist\" query when you quit Emacs."
+        (flet ((process-list ())) ad-do-it))
 
 (autoload 'magit-status "magit" nil t)
 (global-set-key [(ctrl f12)]       'magit-status)
@@ -18,7 +22,7 @@
 (add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
 (add-hook 'haskell-mode-hook 'font-lock-mode)
 ;;(add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-(require 'column-marker)
+;;(require 'column-marker)
 ;;(autoload 'column-marker "/home/tomn/column-marker" "Cycle forward." t)
 ;;(add-hook 'find-file-hook (lambda () (interactive) (column-marker-1 80)))
 (add-hook 'haskell-mode-hook (lambda () (interactive) (column-marker-1 81)))

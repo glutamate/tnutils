@@ -1,12 +1,22 @@
 has-apt emacs23 git-core libcomedi-dev libxrandr-dev 
 has-apt ttf-inconsolata texlive-base texlive-math-extra
+has-apt haskell-mode
+has-apt libgsl0-dev liblapack-dev
+has-apt ubuntu-restricted-extras
+has-apt chromium
 
 haskell-platform
 
-#file-source .emacs http://foo/bar/.emacs
+has-source-pkg magit-0.7 http://zagadka.vm.bytemark.co.uk/magit/magit-0.7.tar.gz
 
 cabal-git-source ~/tnutils git@github.com:glutamate/tnutils.git
 cabal-git-source ~/samfun git@github.com:glutamate/samfun.git
 cabal-git-source ~/bugpan git@github.com:glutamate/bugpan.git
 
 symlink ~/tnutils/.emacs ~/.emacs
+
+if [ -f ~/.Xresources ]; then
+   echo xresource already set
+else
+   echo "Emacs.font: Monospace-10" >> ~/.Xresources
+fi

@@ -1,17 +1,20 @@
 #! /bin/bash
 
+startdir=$(pwd)
+
+
 function has-apt() {
 for i in "$@"
 do
-  if has-apt? $i ; then
+  if has-dpkg? $i ; then
      echo $i already installed
   else
-     apt-get install -y -q $i
+     sudo apt-get install -y -q $i
   fi
 done
 }
 
-function has-apt?() {
+function has-dpkg?() {
   dpkg -l $1 >/dev/null 2>/dev/null
 }
 
@@ -30,6 +33,18 @@ function file-source() {
      wget $2
    fi
 
+}
+
+function has-source-pkg() {
+   file-source $1.tar.gz $2
+   if ! [ -d $1 ]; then
+       tar xfz $1.tar.gz
+       cd $1
+       ./configure
+       make
+       sudo checkinstall -y
+       cd $startdir
+   fi
 }
 
 function git-source() {
@@ -54,7 +69,7 @@ function haskell-platform() {
       has-apt ghc6 ghc6-prof ghc6-doc haddock libglut-dev happy alex
       has-apt libedit-dev zlib1g-dev checkinstall
 
-      cd ~
+      cd $startdir
       file-source haskell-platform-2009.2.0.2.tar.gz http://hackage.haskell.org/platform/2009.2.0.2/haskell-platform-2009.2.0.2.tar.gz
       tar -xzf haskell-platform-2009.2.0.2.tar.gz
       cd haskell-platform-2009.2.0.2
@@ -63,8 +78,8 @@ function haskell-platform() {
       ./configure
       make
       sudo checkinstall -y
- 
-      cabal update
+      cd $startdir
+      sudo cabal update
    fi
 
 }
@@ -75,15 +90,16 @@ function cabal-git-source() {
    else 
      git clone $2
      cd $1
-     cabal install --global -p --enable-documentation
+     sudo cabal install --global -p --enable-documentation
+     cd $startdir
    fi
 }
 
 function up-to-date () {
-   apt-get update
-   apt-get upgrade
+   sudo apt-get update
+   sudo apt-get upgrade
    if has-cabal-install? ; then
-      cabal update
+      sudo cabal update
    fi 
 }
 
@@ -107,7 +123,7 @@ function has-cabal-pkg () {
 for i in "$@"
 do
    if [ -z "$(ghc-pkg list | grep $i)" ]; then
-      cabal install $i --global -p --enable-documentation
+      sudo cabal install $i --global -p --enable-documentation
    fi
 done
 }
