@@ -1,0 +1,126 @@
+#! /bin/bash
+
+function has-apt() {
+for i in "$@"
+do
+  if has-apt? $i ; then
+     echo $i already installed
+  else
+     apt-get install -y -q $i
+  fi
+done
+}
+
+function has-apt?() {
+  dpkg -l $1 >/dev/null 2>/dev/null
+}
+
+function symlink() {
+  if [ -f $2 ]; then
+     echo $2 exists
+  else
+     ln -s $1 $2
+  fi
+}
+
+function file-source() {
+   if [ -f $1 ]; then
+     echo $1 already exists
+   else 
+     wget $2
+   fi
+
+}
+
+function git-source() {
+   if [ -d $1 ]; then
+     echo $1 already exists
+   else 
+     git clone $2
+   fi
+}
+
+function has-cabal-install?() {
+   type -P cabal >/dev/null
+}
+
+function haskell-platform() {
+   if has-cabal-install? ; then
+      echo haskell-platform probably already installed
+      return 0
+   fi
+
+   if karmic? ; then
+      has-apt ghc6 ghc6-prof ghc6-doc haddock libglut-dev happy alex
+      has-apt libedit-dev zlib1g-dev checkinstall
+
+      cd ~
+      file-source haskell-platform-2009.2.0.2.tar.gz http://hackage.haskell.org/platform/2009.2.0.2/haskell-platform-2009.2.0.2.tar.gz
+      tar -xzf haskell-platform-2009.2.0.2.tar.gz
+      cd haskell-platform-2009.2.0.2
+ 
+      # Build & Install
+      ./configure
+      make
+      sudo checkinstall -y
+ 
+      cabal update
+   fi
+
+}
+
+function cabal-git-source() {
+   if [ -d $1 ]; then
+     echo $1 already exists
+   else 
+     git clone $2
+     cd $1
+     cabal install --global -p --enable-documentation
+   fi
+}
+
+function up-to-date () {
+   apt-get update
+   apt-get upgrade
+   if has-cabal-install? ; then
+      cabal update
+   fi 
+}
+
+function karmic?() {
+   if [ -z $(grep CODENAME=karmic /etc/lsb-release) ]; then
+      return 1
+   else
+      return 0
+   fi
+}
+  
+function lucid?() {
+   if [ -z $(grep CODENAME=lucid /etc/lsb-release) ]; then
+      return 1
+   else
+      return 0
+   fi
+}
+
+function has-cabal-pkg () {
+for i in "$@"
+do
+   if [ -z "$(ghc-pkg list | grep $i)" ]; then
+      cabal install $i --global -p --enable-documentation
+   fi
+done
+}
+
+if [ -z "$@" ]; then
+  if [ -f .desysad ]; then
+    . .desysad
+  elif [ -f ~/.desysad ]; then
+    . ~/.desysad
+  fi
+else 
+  for i in "$@"
+  do
+     $i
+  done
+fi

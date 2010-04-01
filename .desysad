@@ -1,0 +1,12 @@
+has-apt emacs23 git-core libcomedi-dev libxrandr-dev 
+has-apt ttf-inconsolata texlive-base texlive-math-extra
+
+haskell-platform
+
+#file-source .emacs http://foo/bar/.emacs
+
+cabal-git-source ~/tnutils git@github.com:glutamate/tnutils.git
+cabal-git-source ~/samfun git@github.com:glutamate/samfun.git
+cabal-git-source ~/bugpan git@github.com:glutamate/bugpan.git
+
+symlink ~/tnutils/.emacs ~/.emacs
