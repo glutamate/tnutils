@@ -176,11 +176,44 @@ ifM mp mc ma = do p <- mp
 guardM :: MonadPlus m => m Bool -> m ()
 guardM mb = mb >>= guard
 
+mapM2 :: Monad m => (a -> b -> m c) -> [a] -> [b] -> m [c]
+mapM2 f xs ys = mapM (uncurry f) $ zip xs ys
+
+
 
 maybeM :: Monad m => Maybe a -> (a -> m b) -> m ()
 maybeM Nothing _ = return ()
 maybeM (Just x) a = a x >> return ()
          
+all2 :: (a->Bool) -> [[a]] -> Bool
+all2 p = and . map (all p)
+
+zip2d :: [[a]] -> [[b]] -> [(a,b)]
+zip2d xss yss = concat $ zipWith zip xss yss
+
+last3 [x,y,z] = [x,y,z]
+last3 [] = []
+last3 (x:xs) = last3 xs
+
+euler :: Double -> Double -> Double -> (Double -> Double) -> Double
+euler h t1 t2 f = let ts = [t1, t1+h..t2]
+                      g acc t =  acc+h*f(t) 
+                  in foldl g 0 ts
+
+
+setIdx 0 x (_:ys) = x:ys
+setIdx n x (y:ys) = y : setIdx (n-1) x ys
+
+forIdx ::  [a] -> (Int ->  b) ->[b]
+forIdx xss f = map (f . snd) $ zip xss [0..]
+
+forIdx2 :: [[a]] -> (Int -> Int -> b) -> [[b]]
+forIdx2 xss f = map g $ zip xss [0..]
+    where g (xs, i) = map  (f i . snd) $ zip xs [0..]
+ 
+for2 :: [[a]] -> (a->b) -> [[b]]
+for2 xss f = map (map f) xss 
+
 {-globalSecsNow :: IO Double
 globalSecsNow = do tnow <- getClockTime
                    tstart <- readTV globalTimeStartTVar
