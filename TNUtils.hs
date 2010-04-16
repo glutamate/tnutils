@@ -142,6 +142,10 @@ onFst f (x,y) = (f x, y)
 onSnd :: (a->b) -> (c,a)->(c,b)
 onSnd f (x,y) = (x, f y)
 
+onBoth f (x,y) = (f x, f y)
+
+
+
 fst3 (x,_,_) = x
 snd3 (_,x,_) = x
 trd3 (_,_,x) = x
@@ -201,6 +205,8 @@ euler h t1 t2 f = let ts = [t1, t1+h..t2]
                   in foldl g 0 ts
 
 
+setIdx :: Int -> a-> [a]->[a]
+setIdx _ _ [] = []
 setIdx 0 x (_:ys) = x:ys
 setIdx n x (y:ys) = y : setIdx (n-1) x ys
 
