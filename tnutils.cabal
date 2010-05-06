@@ -7,4 +7,4 @@ Author:              Tom Nielsen
 Maintainer:          tanielsen@gmail.com
 build-type:          Simple
 Exposed-modules:     TNUtils
-Build-depends:       base, bytestring, binary, old-time, directory, mtl
+Build-depends:       base, bytestring, binary, old-time, directory, mtl, process

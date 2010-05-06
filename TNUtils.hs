@@ -10,6 +10,8 @@ import Data.List
 import Control.Monad
 import Data.Char
 import System.Directory
+import System.Process
+import System.Exit
 import Data.Maybe
 import Control.Monad.State
 import Control.Monad.Trans
@@ -143,6 +145,7 @@ onSnd :: (a->b) -> (c,a)->(c,b)
 onSnd f (x,y) = (x, f y)
 
 onBoth f (x,y) = (f x, f y)
+onBoth3 f (x,y,z) = (f x, f y, f z)
 
 
 
@@ -321,3 +324,16 @@ thin 0 xs  = xs
 thin n xs = let (x:_, ys) = splitAt (n+1) xs
             in x : thin n ys
             
+sh :: String -> IO String
+sh cmd = do (hin, hout, herr, ph) <- runInteractiveCommand cmd
+            excode <-  waitForProcess ph
+            sout <-  hGetContents hout
+            serr <- hGetContents herr
+            case excode of
+                  ExitSuccess -> return sout
+                  ExitFailure n ->
+                      return $ concat ["process error ",
+                                           show n,
+                                           " :",
+                                           serr
+                                          ]
