@@ -3,16 +3,12 @@
       (append (list nil "~/")
               load-path))
 
-;(load "~/haskell-mode-2.4/haskell-site-file")
+(load "~/haskell-mode-2.4/haskell-site-file")
 
 ;(require 'w3m-e21)
 ;(provide 'w3m-e23)
 (setq x-select-enable-clipboard t)
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
-
-(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
-        "Prevent annoying \"Active processes exist\" query when you quit Emacs."
-        (flet ((process-list ())) ad-do-it))
 
 (autoload 'magit-status "magit" nil t)
 (global-set-key [(ctrl f12)]       'magit-status)
@@ -22,7 +18,7 @@
 (add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
 (add-hook 'haskell-mode-hook 'font-lock-mode)
 ;;(add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-;;(require 'column-marker)
+(require 'column-marker)
 ;;(autoload 'column-marker "/home/tomn/column-marker" "Cycle forward." t)
 ;;(add-hook 'find-file-hook (lambda () (interactive) (column-marker-1 80)))
 (add-hook 'haskell-mode-hook (lambda () (interactive) (column-marker-1 81)))
@@ -154,7 +150,7 @@
 (menu-bar-mode -1)
 (toggle-scroll-bar -1)
 (global-set-key "\C-j" 'inferior-haskell-load-file)
-(global-set-key [(f12)] 'compile)
+
 (global-set-key [(f11)] 'infhask-load-main)
 (global-set-key [(shift f11)] 'infhask-quit)
 ;;(global-set-key "\C-t" 'infhask-insert-type)
@@ -255,6 +251,27 @@ Subsequent calls expands the selection to larger semantic unit."
 (ansi-term "/bin/bash")
 (other-window 1)
 
+(defun term-do (cmd)
+  (interactive)
+  (shell-command cmd))
+
+(defun term-do-line ()
+  (interactive)
+  (if (haskell-indent-in-comment (point-min) (point)) 
+      (progn 
+	(setq term-do-last-line (thing-at-point 'line))
+	(term-do term-do-last-line))
+      (term-do term-do-last-line)))
+	
+;;  (term-do (thing-at-point 'line)))
+
+(global-set-key [(f12)] 'term-do-line)
+
+;;  (save-current-buffer
+;;           ((comint-simple-send (make-comint "foo-mongo" "bash") "ls"))))
+
+;;           (send-invisible "ls")))
+
 ;; GNUS
 
 ;; (add-to-list 'gnus-secondary-select-methods '(nnimap "gmail"
@@ -269,3 +286,10 @@ Subsequent calls expands the selection to larger semantic unit."
 ;;       smtpmail-smtp-server "smtp.gmail.com"
 ;;       smtpmail-smtp-service 587
 ;;       smtpmail-local-domain "le.ac.uk")
+
+
+;; (define-derived-mode bugpan-mode haskell-mode 
+;;      "bugpan-mode" 
+;;      "A variant of Haskell mode"
+;;      (font-lock-add-keywords nil '(("[0-9]" . 'c3-face-1)))
+;;     )
