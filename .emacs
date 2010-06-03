@@ -3,7 +3,7 @@
       (append (list nil "~/")
               load-path))
 
-;(load "~/haskell-mode-2.4/haskell-site-file")
+(load "~/haskell-mode-2.7.0/haskell-site-file")
 
 ;(require 'w3m-e21)
 ;(provide 'w3m-e23)
@@ -19,7 +19,7 @@
 (delete-selection-mode 1)
 
 (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 (add-hook 'haskell-mode-hook 'font-lock-mode)
 ;;(add-hook 'haskell-mode-hook 'haskell-indentation-mode)
 ;;(require 'column-marker)

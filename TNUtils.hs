@@ -307,6 +307,10 @@ tell :: Monad m => String -> CodeWriterT m ()
 tell s = do n <- fst `fmap` get
             lift $ W.tell [(replicate n ' ')++s]
 
+tellNoindent :: Monad m => String -> CodeWriterT m ()
+tellNoindent = lift . W.tell . (:[])
+
+
 execCodeWriterT :: Monad m => String -> CodeWriterT m () -> m String
 execCodeWriterT modNm cw = do
   ss <- execWriterT $ execStateT cw (0,[])
@@ -337,3 +341,5 @@ sh cmd = do (hin, hout, herr, ph) <- runInteractiveCommand cmd
                                            " :",
                                            serr
                                           ]
+
+error2 s t = error $ s++show t
