@@ -11,7 +11,11 @@ main = do
 
 
 
-f (l:ls) | "\\begin{code}" `isPrefixOf` l = 
-            f $ tail $ dropWhile (not . ("\\end{code}" `isPrefixOf`)) ls
+f (l:ls) | "\\begin{tabbing}" `isPrefixOf` l = 
+            f $ onHead (drop (length "\\end{tabbing}")) $ dropWhile (not . ("\\end{tabbing}" `isPrefixOf`)) ls
          | otherwise = l:f ls
 f [] = []
+
+onHead :: (a-> a) -> [a] -> [a]
+onHead f [] =[]
+onHead f (x:xs) = f x : xs
