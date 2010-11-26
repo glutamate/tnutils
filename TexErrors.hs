@@ -4,22 +4,18 @@ import Control.Monad
 import Data.List
 import System.Environment
 
-main = do 
-  c <- getContents 
-  foo $ lines c
+main = interact iact
+--  c <- getContents 
+--  foo $ lines c
 
-foo :: [String] -> IO ()
-foo lns@(('!':l):_) = mapM_ putStrLn lns
-foo (l:lns) | "Warning" `isInfixOf` l = putStrLn l >> foo lns
-            | "Error" `isInfixOf` l = putStrLn l >> foo lns
-            | otherwise = foo lns
-foo [] = return ()
+iact :: String -> String
+iact = unlines . foo1 . lines
 
+foo1 :: [String] -> [String]
+--foo :: [String] -> IO ()
+foo1 lns@(('!':l):_) = lns
+foo1 (l:lns) | "Warning" `isInfixOf` l = l : foo1 lns
+             | "Error" `isInfixOf` l = l : foo1 lns
+             | otherwise = foo1 lns
+foo1 [] = []
 
-input :: String -> IO ()
-input nm = fmap lines (readFile $ nm++".tex") >>= mapM_ f
-
-
-f s | "\\input{" `isPrefixOf` s = 
-        let nm = takeWhile (/='}') $ drop 7 s in input nm
-    | otherwise = putStrLn s
