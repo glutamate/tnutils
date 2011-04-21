@@ -70,6 +70,8 @@ inChunksOf n xs = let (hds, tls) = splitAt n xs
 orJust (Just x) _ = x
 orJust _ y = y 
 
+padStr n s = s ++ replicate (n - length s) ' '
+
 strictWriteBS :: String -> BS.ByteString -> IO ()
 strictWriteBS fnm bs = do
   h <- openBinaryFile fnm WriteMode
@@ -248,6 +250,16 @@ waitUntil t0 s = do tn <- getClockTime
 secsSince t0 =  do tn <- getClockTime
                    return $  diffInS tn t0
 
+runForSecs s ma = do 
+  t0 <- tic
+  let runIt = do
+        tnow <- toc t0
+        if tnow > s
+           then return ()
+           else ma >> runIt
+  runIt
+  
+
 print2 x y = putStrLn $ x++show y
 
 traceM s = trace s $ return ()
@@ -343,3 +355,6 @@ sh cmd = do (hin, hout, herr, ph) <- runInteractiveCommand cmd
                                           ]
 
 error2 s t = error $ s++show t
+
+headOr (x:xs) _ = x
+headOr _ x = x
