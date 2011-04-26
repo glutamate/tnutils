@@ -315,8 +315,8 @@ indentAbs n = do
   modify $ \(_,ss)->(n,ss)
 
 
-tell :: (Monad m, Functor m) => String -> CodeWriterT m ()
-tell s = do n <- fst `fmap` get
+tell :: (Monad m) => String -> CodeWriterT m ()
+tell s = do n <- fst `liftM` get
             lift $ W.tell [(replicate n ' ')++s]
 
 tellNoindent :: Monad m => String -> CodeWriterT m ()

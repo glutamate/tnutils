@@ -41,16 +41,16 @@ jrsi citeblocks refdb = (intxt, ref) where
                        else grammaticalList aus 
    doiStr flds = maybe "" (\doi->" (DOI "++doi++")") $ lookup "doi" flds
    edStr flds = maybe ". " (\ed->", "++ed++" ed. ") $ lookup "edition" flds 
-   ppStr flds = maybe "" (\pp->", "++pp) $ lookup "pages" flds 
+   ppStr flds = maybe "" (\pp->", "++pp++".") $ lookup "pages" flds 
    formatByTy "article" flds = 
-      [ auFormat au++" "++yr++" "++noFinalDot ti++". \\emph{"++jr++"} "++getF "volume" flds++ppStr flds++ doiStr flds| 
+      [ auFormat au++" "++yr++" "++withFinalDot ti++" \\emph{"++ abbrevJr jr++"} "++getF "volume" flds++ppStr flds++ doiStr flds| 
            ("author",au) <- flds,
            ("title",ti) <- flds,
            ("year",yr) <- flds,
            ("journal",jr) <- flds
         ]
    formatByTy "book" flds = 
-      [ auFormat au++" "++yr++" \\emph{"++ti++"}"++edStr flds++loc++": "++pub | 
+      [ auFormat au++" "++yr++" \\emph{"++ti++"}"++edStr flds++loc++": "++pub++"." | 
            ("author",au) <- flds,
            ("title",ti) <- flds,
            ("year",yr) <- flds,
@@ -59,7 +59,7 @@ jrsi citeblocks refdb = (intxt, ref) where
         ]
    formatByTy "inbook" flds = 
       [ auFormat au++" "++yr++" "++ti++". In \\emph{"++bkti++"}"
-        ++"(ed. "++auFormat eds++"), pp. "++pgs++". "++loc++": "++pub | 
+        ++" (ed. "++auFormat eds++"), pp. "++pgs++". "++loc++": "++pub++"." | 
            ("author",au) <- flds,
            ("title",ti) <- flds,
            ("year",yr) <- flds,
@@ -70,16 +70,22 @@ jrsi citeblocks refdb = (intxt, ref) where
            ("address",loc) <- flds
         ]
    formatByTy "techreport" flds = 
-      [ auFormat au++" "++yr++" "++ti++" "++pub | 
+      [ auFormat au++" "++yr++" "++withFinalDot ti++" "++pub | 
            ("author",au) <- flds,
            ("title",ti) <- flds,
            ("year",yr) <- flds,
            ("series",pub) <- flds
         ]
 --   formatByTy ft flds = error $ "formatByTy: "++ ft
-noFinalDot s | last s == '.' = init s
-             | ".}" `isSuffixOf` s = take (length s -2) s ++ "}"
-             | otherwise = s     
+withFinalDot s | last s `elem` termcs = s
+               | ".}" `isSuffixOf` s = s -- take (length s -2) s ++ "}"
+               | "?}" `isSuffixOf` s = s -- take (length s -2) s ++ "}"
+               | "!}" `isSuffixOf` s = s -- take (length s -2) s ++ "}"
+               | otherwise = s ++ "."   
+  where termcs =".!?"
+
+abbrevJr s | "Journal of" `isPrefixOf` s = "J. "++drop 11 s
+           | otherwise = s
 main = do
   -- first pass: load file, get citeBlocks
   fnm:bib:_ <- getArgs
