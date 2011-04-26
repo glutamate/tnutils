@@ -315,7 +315,7 @@ indentAbs n = do
   modify $ \(_,ss)->(n,ss)
 
 
-tell :: Monad m => String -> CodeWriterT m ()
+tell :: (Monad m, Functor m) => String -> CodeWriterT m ()
 tell s = do n <- fst `fmap` get
             lift $ W.tell [(replicate n ' ')++s]
 

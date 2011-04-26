@@ -6,5 +6,16 @@ License-file:        LICENSE
 Author:              Tom Nielsen
 Maintainer:          tanielsen@gmail.com
 build-type:          Simple
-Exposed-modules:     TNUtils
-Build-depends:       base, bytestring, binary, old-time, directory, mtl, process
+
+
+Library 
+   Exposed-modules:     TNUtils
+   Build-depends:       base, bytestring, binary, old-time, directory, mtl, process
+
+Executable tex2one
+   Main-Is:             Tex2One.hs
+   Build-depends:       base
+
+Executable hsbibtex
+   Main-Is:             hsbibtex.hs
+   Build-depends:       base, bibtex, parsec
