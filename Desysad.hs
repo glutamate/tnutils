@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs #-} 
+{-# LANGUAGE GADTs, ScopedTypeVariables #-} 
 module Desysad where
 
 import Control.Monad.State.Strict
@@ -8,7 +8,7 @@ import System.Directory
 import System.Process
 import System.Exit
 import Control.Concurrent
-import Control.Exception
+import Control.Exception as E
 
 --- ONE APPROACH
 
@@ -17,6 +17,7 @@ data Cmd a where
   Bind :: Cmd a -> (a -> Cmd b) -> Cmd b
   Run :: String -> Cmd String
   Fail :: String -> Cmd a
+  Mplus :: Cmd a -> Cmd a -> Cmd a
 
 instance Functor Cmd where
   fmap f cmd = cmd `Bind` (Return . f)  
@@ -26,63 +27,98 @@ instance Monad Cmd where
    (>>=) = Bind
    fail = Fail
 
-data DS1 = DS1 {
+instance MonadPlus Cmd where
+      mzero = Fail "mzero"
+      mplus x y = Mplus x y
+
+data DS = DS {
      pkgList1 :: [String],
      runTests1 :: Bool
   }
 
-type Sys1 a =  StateT DS Cmd a
+type Sys a =  StateT DS  Cmd a
 
 
+
+runCmd :: Cmd a -> IO a
+runCmd (Return x) = return x
+runCmd (Fail s) = fail s
+runCmd (Bind cmdx f) =  runCmd cmdx >>= runCmd . f 
+runCmd (Run s) = do res <- sh s
+                    case res of
+                       Left s -> fail s
+                       Right s -> return s
+runCmd (Mplus (Fail s) cy) = runCmd cy
+runCmd (Mplus cx cy) = do
+       runCmd cx `E.catch` (\(e::SomeException)-> runCmd cy)
+
+runSys :: Sys a -> IO a
+runSys stcmda = do
+    let s = DS [] False
+    runCmd $ evalStateT stcmda s
+
+
+run :: String -> Sys ()
+run s = lift (Run s) >> return ()
+
+ensure_pkg_list :: Sys ()
+ensure_pkg_list = do 
+      pkgs <- fmap pkgList1 get
+      when (null pkgs) $ do
+           return () 
+
+has_apt :: String -> Sys ()
+has_apt pkg = do
+   run ("dpkg -l $1 >/dev/null 2>/dev/null") `mplus` run ("apt-get install -y -q $i")
 
 --- ANOTHER ATTEMPT
 
-data DS = DS {
+data DS1= DS1 {
      handles :: (Handle, Handle, Handle, ProcessHandle),
      pkgList :: [String],
      runTests :: Bool
 
   }
 
-type Sys a =  StateT DS (ErrorT String IO) a
+type Sys1 a =  StateT DS1 (ErrorT String IO) a
 
 io m = lift $  lift m
 
-sh :: String -> IO String
+sh :: String -> IO (Either String String)
 sh cmd = do (hin, hout, herr, ph) <- runInteractiveCommand cmd
             excode <-  waitForProcess ph
             sout <-  hGetContents hout
             serr <- hGetContents herr
             case excode of
-                  ExitSuccess -> return sout
+                  ExitSuccess -> return $ Right sout
                   ExitFailure n ->
-                      return $ concat ["process error ",
+                      return $ Left $ concat ["process error ",
                                            show n,
                                            " :",
                                            serr
                                           ]
 
-main1 = runLocal $ do 
+main2 = runLocal $ do 
    pwd <- cmd "pwd"
    console pwd
 
-cmd :: String -> Sys String
+cmd :: String -> Sys1 String
 cmd s = do (inp, o , e, p) <- fmap handles get
            io $ hPutStr inp $ s++"\n"
            io $ hGetLine o
 
-console :: String -> Sys ()
+console :: String -> Sys1 ()
 console s = lift $ lift $ putStrLn s
 
 --pwd :: Sys String
 --pwd = 
 
-runLocal :: Sys () -> IO ()
+runLocal :: Sys1 () -> IO ()
 runLocal esio = do
 --      hSetBuffering stdin NoBuffering   
       h@(inp,o,e,pid) <- runInteractiveCommand "bash" 
       threadDelay $ 100*1000
-      myForkIO $ do let s = DS h [] False
+      myForkIO $ do let s = DS1 h [] False
                     let errio = evalStateT esio s
                     r <- runErrorT errio
                     case r of

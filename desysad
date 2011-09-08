@@ -110,6 +110,22 @@ function karmic?() {
       return 0
    fi
 }
+
+function maverick?() {
+   if [ -z $(grep CODENAME=maverick /etc/lsb-release) ]; then
+      return 1
+   else
+      return 0
+   fi
+}
+
+function oneric?() {
+   if [ -z $(grep CODENAME=oneric /etc/lsb-release) ]; then
+      return 1
+   else
+      return 0
+   fi
+}
   
 function lucid?() {
    if [ -z $(grep CODENAME=lucid /etc/lsb-release) ]; then
